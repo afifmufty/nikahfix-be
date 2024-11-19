@@ -17,3 +17,9 @@ npm run dev
 ```
 
 you can deploy to this project vercel serverless
+
+# ENDPOINT
+
+- GET /
+- GET /wish
+- POST /wish

@@ -2,11 +2,21 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import PinoHttp from 'pino-http';
+import rateLimit from 'express-rate-limit';
 import 'dotenv/config';
+
 import supabaseDatabase from './supabaseDatabase.js';
 // env
 const { APP_PORT, APP_NAME } = process.env;
-
+const limitter = rateLimit({
+  windowMs: 5000,
+  limit: 5,
+  handler: (req, res) => {
+    res.status(429).send({
+      message: 'Too many requests, please try again later.',
+    });
+  },
+});
 const app = express();
 app.use(PinoHttp());
 app.use(cors());
@@ -30,7 +40,7 @@ app.get('/', (req, res) => {
     });
   }
 });
-app.post('/wish', async (req, res) => {
+app.post('/wish', limitter, async (req, res) => {
   try {
     const { name, message } = req.body;
     if (!name || name.length < 3 || !message) {
